@@ -4,9 +4,9 @@
 
 **Goal:** 将现有单页刷题初版重构为可离线使用、按题库独立部署的响应式 PWA，首发发布 2026 深圳医师定期考核临床类别 500 题题库。
 
-**Architecture:** 使用 React + TypeScript + Vite 构建纯静态应用，每个 `bankId` 单独构建并部署到独立 Cloudflare Pages 免费网址。题库和搜索索引在构建时生成，学习进度、错题、设置和考试记录写入按题库隔离的 IndexedDB；应用不包含后端、账号、激活码或跨设备同步。
+**Architecture:** 使用 React + TypeScript + Vite 构建纯静态应用，每个 `bankId` 单独构建并部署到独立 GitHub Pages 免费网址。题库和搜索索引在构建时生成，学习进度、错题、设置和考试记录写入按题库隔离的 IndexedDB；应用不包含后端、账号、激活码或跨设备同步。
 
-**Tech Stack:** React 19、TypeScript、Vite、Tailwind CSS、React Router、IndexedDB（idb）、Fuse.js、Vitest、React Testing Library、fake-indexeddb、vite-plugin-pwa、Cloudflare Pages。
+**Tech Stack:** React 19、TypeScript、Vite、Tailwind CSS、React Router、IndexedDB（idb）、Fuse.js、Vitest、React Testing Library、fake-indexeddb、vite-plugin-pwa、GitHub Pages。
 
 **Spec:** `docs/superpowers/specs/2026-10-05-medical-question-bank-pwa-design.md`
 
@@ -899,48 +899,48 @@ git add app/src/generated docs/buyer-instructions.md docs/listing-copy.md docs/d
 git commit -m "release: prepare 2026 clinical question bank"
 ```
 
-### Task 12: 部署到卖家 Cloudflare Pages
+### Task 12: 部署到卖家 GitHub Pages
 
 **Files:**
 - Modify: `docs/deployment.md`
+- Create: `.github/workflows/deploy-pages.yml`
 
 **Interfaces:**
-- Consumes: `app/dist`、卖家 Cloudflare 账户授权。
-- Produces: `https://sz-clinical-2026-review.pages.dev` 或首个可用的顺序后缀网址。
+- Consumes: `app/dist`、卖家 GitHub 账户 `lekuq`。
+- Produces: `https://lekuq.github.io/sz-clinical-2026-review/`。
 
-- [x] **Step 1: 登录卖家账户**
-
-```powershell
-npx wrangler login
-```
-
-由卖家在浏览器中完成 Cloudflare 授权，不提交任何令牌。
-
-- [x] **Step 2: 创建或选择 Pages 项目**
+- [x] **Step 1: 创建公开发布仓库**
 
 ```powershell
-npx wrangler pages project create sz-clinical-2026-review --production-branch main
+gh repo create lekuq/sz-clinical-2026-review --public --description "2026 深圳医师定期考核临床类别复习助手"
+git remote add origin https://github.com/lekuq/sz-clinical-2026-review.git
+git push -u origin HEAD:main
 ```
 
-如果项目名已被占用，依次使用 `sz-clinical-2026-review-01`、`sz-clinical-2026-review-02`。
-
-- [x] **Step 3: 部署生产版本**
+- [x] **Step 2: 启用 GitHub Pages**
 
 ```powershell
-npx wrangler pages deploy app/dist --project-name sz-clinical-2026-review --branch main
+gh api -X POST repos/lekuq/sz-clinical-2026-review/pages -f build_type=workflow
 ```
+
+- [x] **Step 3: 由 GitHub Actions 部署生产版本**
+
+```text
+.github/workflows/deploy-pages.yml
+```
+
+工作流执行测试、构建 `app/dist` 并部署到 GitHub Pages。
 
 - [x] **Step 4: 验证线上版本**
 
-检查首页、500 题数量、搜题、模拟考试、刷新恢复和 Service Worker 更新；确认无网络请求发送作答数据。记录最终固定网址。
+已验证 `https://lekuq.github.io/sz-clinical-2026-review/`、Manifest 和 Service Worker 均返回 HTTP 200。
 
 - [x] **Step 5: 提交部署记录**
 
 ```powershell
-git add docs/deployment.md
-git commit -m "docs: record production deployment"
+git add docs/deployment.md .github/workflows/deploy-pages.yml
+git commit -m "ci: deploy static app with GitHub Pages"
 ```
-
 ---
 
 ## 计划自检
@@ -949,4 +949,6 @@ git commit -m "docs: record production deployment"
 - 无占位任务或未定义接口。
 - 数据模型统一使用字符串题号、`answer: string[]` 和 `answers: Record<string, string[]>`。
 - 考试计分、计时、错题规则、搜索字段和存储隔离均使用纯函数或仓储接口测试。
+
+
 
