@@ -40,7 +40,7 @@
 - Consumes: 无。
 - Produces: `npm run test` 可运行 Vitest；`npm run build` 可构建 React 应用；后续任务使用 `@/` 路径别名。
 
-- [ ] **Step 1: 提取初版并确认基线**
+- [x] **Step 1: 提取初版并确认基线**
 
 ```powershell
 Expand-Archive -LiteralPath '.\Kimi_Agent_医学题库App方案.zip' -DestinationPath '.\_extract' -Force
@@ -52,7 +52,7 @@ npm run build
 
 预期：`app/dist` 生成，初版构建通过。
 
-- [ ] **Step 2: 添加测试依赖和脚本**
+- [x] **Step 2: 添加测试依赖和脚本**
 
 在 `app/package.json` 中加入：
 
@@ -79,7 +79,7 @@ npm run build
 
 执行 `npm install`。
 
-- [ ] **Step 3: 写最小测试配置和 smoke test**
+- [x] **Step 3: 写最小测试配置和 smoke test**
 
 创建 `app/vitest.config.ts`：
 
@@ -119,7 +119,7 @@ test('renders the product title', () => {
 })
 ```
 
-- [ ] **Step 4: 运行测试并验证基线**
+- [x] **Step 4: 运行测试并验证基线**
 
 ```powershell
 npm test
@@ -128,7 +128,7 @@ npm run build
 
 预期：测试通过，构建通过。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app
@@ -152,7 +152,7 @@ git commit -m "chore: bootstrap app and test tooling"
 - Consumes: 初版 `app/src/questions.json`。
 - Produces: `Question`、`BankConfig`、`validateBank(config, questions): string[]`、`normalizeLegacyQuestions(raw): Question[]`。
 
-- [ ] **Step 1: 定义数据类型**
+- [x] **Step 1: 定义数据类型**
 
 创建 `app/src/types/question.ts`：
 
@@ -191,7 +191,7 @@ export interface BankConfig {
 }
 ```
 
-- [ ] **Step 2: 写失败校验测试**
+- [x] **Step 2: 写失败校验测试**
 
 创建 `app/src/lib/bank.test.ts`：
 
@@ -234,7 +234,7 @@ describe('validateBank', () => {
 
 执行 `npm run test -- src/lib/bank.test.ts`，预期失败，因为 `validateBank` 尚未实现。
 
-- [ ] **Step 3: 实现校验与旧数据转换**
+- [x] **Step 3: 实现校验与旧数据转换**
 
 创建 `app/src/lib/bank.ts`：
 
@@ -262,7 +262,7 @@ export function validateBank(config: BankConfig, questions: Question[]): string[
 
 创建 `scripts/validate-bank.mjs`：读取生成文件，使用与 `validateBank` 相同规则校验，发现错误时以非零状态退出。
 
-- [ ] **Step 4: 运行转换、测试和构建校验**
+- [x] **Step 4: 运行转换、测试和构建校验**
 
 ```powershell
 node scripts/import-legacy-bank.mjs
@@ -273,7 +273,7 @@ npm run build
 
 预期：生成 500 道题，无空解析、无答案越界，测试和构建通过。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/types app/src/generated app/src/lib/bank.ts app/src/lib/bank.test.ts scripts
@@ -292,7 +292,7 @@ git commit -m "feat: add canonical bank data and validation"
 - Consumes: `BankConfig`。
 - Produces: `openBankDatabase(bankId): Promise<IDBPDatabase<MedQuizDb>>`、`createRepository(bankId)`、`resetBankData(bankId)`。
 
-- [ ] **Step 1: 定义持久化类型**
+- [x] **Step 1: 定义持久化类型**
 
 创建 `app/src/types/persistence.ts`：
 
@@ -339,7 +339,7 @@ export interface StudyPosition {
 }
 ```
 
-- [ ] **Step 2: 写隔离和默认设置失败测试**
+- [x] **Step 2: 写隔离和默认设置失败测试**
 
 创建 `app/src/lib/db.test.ts`：
 
@@ -368,11 +368,11 @@ test('persists a wrong record', async () => {
 
 执行测试，预期失败，因为仓储尚未实现。
 
-- [ ] **Step 3: 实现数据库与仓储**
+- [x] **Step 3: 实现数据库与仓储**
 
 使用 `idb` 创建数据库 `medquiz__${bankId}__v1`，对象仓库为 `settings`、`progress`、`wrongBook`、`examSessions`、`studySessions`。实现 `DEFAULT_SETTINGS`、`createRepository`、`resetBankData`，所有键均使用字符串题号。
 
-- [ ] **Step 4: 运行测试、构建并检查多数据库**
+- [x] **Step 4: 运行测试、构建并检查多数据库**
 
 ```powershell
 npm run test -- src/lib/db.test.ts
@@ -381,7 +381,7 @@ npm run build
 
 预期：两个测试均通过，数据库名包含各自 `bankId`。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/types/persistence.ts app/src/lib/db.ts app/src/lib/db.test.ts app/package.json app/package-lock.json
@@ -400,7 +400,7 @@ git commit -m "feat: add isolated IndexedDB persistence"
 - Consumes: `Question`、`QuestionProgress`、`WrongRecord`、`ExamSession`。
 - Produces: `applyAnswerResult`、`applyWrongAnswer`、`applyCorrectAnswer`、`sampleExamQuestions`、`scoreExam`、`remainingSeconds`。
 
-- [ ] **Step 1: 写错题规则失败测试**
+- [x] **Step 1: 写错题规则失败测试**
 
 ```ts
 import { expect, test } from 'vitest'
@@ -424,7 +424,7 @@ test('wrong answer resets consecutive correct count', () => {
 })
 ```
 
-- [ ] **Step 2: 写考试逻辑失败测试**
+- [x] **Step 2: 写考试逻辑失败测试**
 
 ```ts
 import { expect, test } from 'vitest'
@@ -454,7 +454,7 @@ test('never returns negative time', () => {
 })
 ```
 
-- [ ] **Step 3: 实现纯函数并运行失败测试**
+- [x] **Step 3: 实现纯函数并运行失败测试**
 
 实现所有函数，保持无 React 和 IndexedDB 依赖。`sampleExamQuestions` 在题量不足时抛出 `Error('单选题不足 100 道')`。执行：
 
@@ -464,7 +464,7 @@ npm run test -- src/lib/domain/progress.test.ts src/lib/domain/exam.test.ts
 
 预期：全部失败后实现，再全部通过。
 
-- [ ] **Step 4: 运行全部测试**
+- [x] **Step 4: 运行全部测试**
 
 ```powershell
 npm test
@@ -473,7 +473,7 @@ npm run build
 
 预期：通过。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/lib/domain
@@ -491,7 +491,7 @@ git commit -m "feat: add progress wrong-book and exam domain logic"
 - Consumes: `Question[]`。
 - Produces: `normalizeSearchText`、`createSearchIndex`、`searchQuestions(index, query): SearchResult[]`。
 
-- [ ] **Step 1: 安装 Fuse.js 并写失败测试**
+- [x] **Step 1: 安装 Fuse.js 并写失败测试**
 
 ```powershell
 npm install fuse.js
@@ -524,17 +524,17 @@ test('does not search explanation', () => {
 })
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 ```powershell
 npm run test -- src/lib/search.test.ts
 ```
 
-- [ ] **Step 3: 实现搜索索引**
+- [x] **Step 3: 实现搜索索引**
 
 搜索文档字段仅为 `stem`、`optionText`、`answerText`、`searchTerms`，绝不添加 `explanation`。使用 Fuse.js，权重为题干 0.45、选项 0.25、答案 0.2、搜索词 0.1，阈值 0.35；结果返回 `question`、`matchedFields` 和 `score`。
 
-- [ ] **Step 4: 运行测试和构建**
+- [x] **Step 4: 运行测试和构建**
 
 ```powershell
 npm run test -- src/lib/search.test.ts
@@ -543,7 +543,7 @@ npm run build
 
 预期：忽略空格和标点、错别字和近义词用例通过。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/lib/search.ts app/src/lib/search.test.ts app/package.json app/package-lock.json
@@ -565,7 +565,7 @@ git commit -m "feat: add local fuzzy question search"
 - Consumes: `BankConfig`、`createRepository`、`UserSettings`。
 - Produces: 路由 `/`、`/study`、`/exam`、`/wrong`、`/search`、`/settings`；`useSettings()` 返回设置和保存函数。
 
-- [ ] **Step 1: 写导航与设置页面测试**
+- [x] **Step 1: 写导航与设置页面测试**
 
 ```tsx
 import { render, screen } from '@testing-library/react'
@@ -582,17 +582,17 @@ test('shows all primary navigation entries', () => {
 })
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 ```powershell
 npm run test -- src/app/AppShell.test.tsx
 ```
 
-- [ ] **Step 3: 实现外壳、设置与路由**
+- [x] **Step 3: 实现外壳、设置与路由**
 
 实现手机底部导航、平板/桌面左侧导航和内容容器；设置页面包含字号、错题规则、解析展开、自动跳题、版本、免责声明和清除数据。所有设置变更调用 IndexedDB 仓储。
 
-- [ ] **Step 4: 运行测试、构建并验证响应式宽度**
+- [x] **Step 4: 运行测试、构建并验证响应式宽度**
 
 ```powershell
 npm run test -- src/app/AppShell.test.tsx
@@ -601,7 +601,7 @@ npm run build
 
 预期：导航测试通过，360px、768px、1024px 宽度无横向滚动。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/app app/src/hooks app/src/pages/SettingsPage.tsx app/src/App.tsx app/src/index.css
@@ -623,7 +623,7 @@ git commit -m "feat: add responsive shell and settings"
 - Consumes: `Question`、`QuestionProgress`、`applyAnswerResult`、`applyWrongAnswer`。
 - Produces: `buildStudyQueue`、`moveStudyPosition`、`QuestionView` 组件。
 
-- [ ] **Step 1: 写队列和错题联动失败测试**
+- [x] **Step 1: 写队列和错题联动失败测试**
 
 ```ts
 import { expect, test } from 'vitest'
@@ -638,7 +638,7 @@ test('does not move past the final question', () => {
 })
 ```
 
-- [ ] **Step 2: 写背题与做题组件测试**
+- [x] **Step 2: 写背题与做题组件测试**
 
 ```tsx
 import { render, screen } from '@testing-library/react'
@@ -664,11 +664,11 @@ test('practice mode hides explanation before confirmation', () => {
 })
 ```
 
-- [ ] **Step 3: 实现模式与状态**
+- [x] **Step 3: 实现模式与状态**
 
 实现顺序/随机队列、恢复位置、上一题和下一题。做题模式选中后点击“确认答案”，答错调用错题写库，答对按当前规则更新错题。背题模式直接显示正确答案与解析，不写错题。
 
-- [ ] **Step 4: 运行测试、构建和手动抽查**
+- [x] **Step 4: 运行测试、构建和手动抽查**
 
 ```powershell
 npm run test -- src/lib/study-session.test.ts src/components/QuestionView.test.tsx
@@ -677,7 +677,7 @@ npm run build
 
 预期：通过；手动打开本地页面抽查 3 道题的选项和解析。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/components/QuestionView.tsx app/src/components/QuestionView.test.tsx app/src/pages/StudyPage.tsx app/src/lib/study-session.ts app/src/lib/study-session.test.ts app/src/pages/Home.tsx app/src/components/QuizCard.tsx
@@ -697,7 +697,7 @@ git commit -m "feat: add back-study and practice modes"
 - Consumes: `sampleExamQuestions`、`scoreExam`、`remainingSeconds`、`ExamSession`。
 - Produces: `useExam()`，包含开始、恢复、选择答案、交卷和自动交卷。
 
-- [ ] **Step 1: 写重置计时和自动交卷失败测试**
+- [x] **Step 1: 写重置计时和自动交卷失败测试**
 
 ```tsx
 import { renderHook, act } from '@testing-library/react'
@@ -710,17 +710,17 @@ test('submits automatically when time expires', async () => {
 })
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 ```powershell
 npm run test -- src/hooks/useExam.test.tsx src/components/ExamPalette.test.tsx
 ```
 
-- [ ] **Step 3: 实现考试页面**
+- [x] **Step 3: 实现考试页面**
 
 实现 60 分钟倒计时、答题卡、上一题/下一题、修改答案、主动交卷确认、到时自动交卷和刷新恢复。考试中不显示答案或解析。结果页逐题展示用户答案、正确答案和解析，并把错题写入错题集。
 
-- [ ] **Step 4: 运行测试并手动验证自动交卷**
+- [x] **Step 4: 运行测试并手动验证自动交卷**
 
 ```powershell
 npm run test -- src/hooks/useExam.test.tsx src/components/ExamPalette.test.tsx
@@ -729,7 +729,7 @@ npm run build
 
 预期：100 题随机、不重复；60 分及以上显示及格；到时自动交卷。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/pages/ExamPage.tsx app/src/pages/ExamResultPage.tsx app/src/components/ExamPalette.tsx app/src/components/ExamPalette.test.tsx app/src/hooks/useExam.ts app/src/hooks/useExam.test.tsx
@@ -750,7 +750,7 @@ git commit -m "feat: add full simulation exam flow"
 - Consumes: `WrongRecord[]`、`Question[]`、`createSearchIndex`、`searchQuestions`。
 - Produces: 错题排序、单题移除、一键清空、错题复习入口和搜索结果跳转。
 
-- [ ] **Step 1: 写错题规则和搜索范围失败测试**
+- [x] **Step 1: 写错题规则和搜索范围失败测试**
 
 ```tsx
 import { render, screen } from '@testing-library/react'
@@ -762,24 +762,24 @@ test('shows wrong count and last wrong time fields', () => {
 })
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 ```powershell
 npm run test -- src/components/WrongBookList.test.tsx src/components/SearchResults.test.tsx
 ```
 
-- [ ] **Step 3: 实现页面**
+- [x] **Step 3: 实现页面**
 
 错题集支持按最近答错和累计次数排序、规则切换、单题移除、清空和错题练习。搜题页支持防抖、空结果提示、命中字段标签和点击跳转。
 
-- [ ] **Step 4: 运行测试和构建**
+- [x] **Step 4: 运行测试和构建**
 
 ```powershell
 npm run test -- src/components/WrongBookList.test.tsx src/components/SearchResults.test.tsx
 npm run build
 ```
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/pages/WrongBookPage.tsx app/src/components/WrongBookList.tsx app/src/components/WrongBookList.test.tsx app/src/pages/SearchPage.tsx app/src/components/SearchResults.tsx app/src/components/SearchResults.test.tsx
@@ -804,13 +804,13 @@ git commit -m "feat: add wrong-book and search pages"
 - Consumes: `bankId`、生成题库文件。
 - Produces: 可安装 PWA、离线缓存、更新提示、`npm run build:bank -- --bank <id>`。
 
-- [ ] **Step 1: 安装 PWA 插件**
+- [x] **Step 1: 安装 PWA 插件**
 
 ```powershell
 npm install -D vite-plugin-pwa
 ```
 
-- [ ] **Step 2: 配置 Manifest 和 Service Worker**
+- [x] **Step 2: 配置 Manifest 和 Service Worker**
 
 在 `app/vite.config.ts` 中使用 `VitePWA`：
 
@@ -836,11 +836,11 @@ VitePWA({
 })
 ```
 
-- [ ] **Step 3: 实现更新提示和构建脚本**
+- [x] **Step 3: 实现更新提示和构建脚本**
 
 `useAppUpdate` 使用 `registerSW` 在发现新版本时显示提示，用户确认后调用 `updateSW(true)`。`scripts/build-bank.mjs` 校验 `bankId`、复制对应生成的题库文件、执行 `npm run build`，输出 `app/dist`。
 
-- [ ] **Step 4: 验证 PWA 与离线**
+- [x] **Step 4: 验证 PWA 与离线**
 
 ```powershell
 npm run build
@@ -849,7 +849,7 @@ npx vite preview
 
 使用浏览器开发者工具确认 Manifest、Service Worker 已注册；首次打开后切换 Offline，刷新仍能显示题库和作答。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/vite.config.ts app/src/main.tsx app/index.html app/public/icons app/src/hooks/useAppUpdate.ts scripts/build-bank.mjs scripts/build-bank.test.ts docs/deployment.md app/package.json app/package-lock.json
@@ -870,15 +870,15 @@ git commit -m "feat: add offline PWA and bank-specific builds"
 - Consumes: 首发 500 题 Word、已有解析、构建产物。
 - Produces: 首发生产版本、买家说明、闲鱼文案、部署步骤和验收记录。
 
-- [ ] **Step 1: 审核并补齐首发解析**
+- [x] **Step 1: 审核并补齐首发解析**
 
 用当前初版 `questions.json` 的 500 条解析生成规范化题库；对空解析、答案越界、重复题干和异常选项执行校验。重复题干只允许在答案和选项完全一致时合并，否则保留并标记。
 
-- [ ] **Step 2: 写买家说明和上架文案**
+- [x] **Step 2: 写买家说明和上架文案**
 
 买家说明包含：固定网址、手机添加到主屏幕、进度仅保存在本机、清除浏览器数据影响、AI 解析免责声明。上架文案不使用官方合作、包过、原题和权威认证等表述。
 
-- [ ] **Step 3: 运行全量验证**
+- [x] **Step 3: 运行全量验证**
 
 ```powershell
 npm test
@@ -888,11 +888,11 @@ node scripts/validate-bank.mjs
 
 预期：全部通过；500 题全部存在解析；无答案越界。
 
-- [ ] **Step 4: 执行浏览器验收**
+- [x] **Step 4: 执行浏览器验收**
 
 依次检查 360px、390px、768px、1024px、1440px 宽度；验证背题、做题、100 题考试、60 分钟计时、自动交卷、错题规则、搜题和离线模式。记录结果到 `docs/deployment.md`。
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```powershell
 git add app/src/generated docs/buyer-instructions.md docs/listing-copy.md docs/deployment.md README.md
