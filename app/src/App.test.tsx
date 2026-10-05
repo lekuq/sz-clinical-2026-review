@@ -9,5 +9,6 @@ test('renders the product title', () => {
     </MemoryRouter>,
   )
 
-  expect(screen.getByText(/2026 深圳医师定期考核/)).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: '医考通' })).toBeInTheDocument()
 })
+

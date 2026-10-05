@@ -34,7 +34,8 @@ export interface UserSettings {
 }
 
 export interface StudyPosition {
-  mode: 'study' | 'practice' | 'wrong'
+  mode: 'back' | 'practice' | 'wrong'
   questionId: string
   updatedAt: number
 }
+
