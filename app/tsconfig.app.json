@@ -5,7 +5,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "vite-plugin-pwa/client"],
     "skipLibCheck": true,
 
     "baseUrl": ".",
@@ -32,4 +32,5 @@
   },
   "include": ["src"]
 }
+
 
