@@ -1,6 +1,7 @@
 ﻿import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { buildSearchTerms } from './search-terms.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const legacyPath = resolve(root, 'app/src/questions.json')
@@ -12,24 +13,26 @@ const legacy = JSON.parse(await readFile(legacyPath, 'utf8'))
 
 const questions = legacy.map((item) => {
   const answer = [String(item.answer)].filter(Boolean)
-  const answerText = item.options
-    .filter((option) => answer.includes(String(option.key)))
-    .map((option) => String(option.text))
+  const options = item.options.map((option) => ({
+    key: String(option.key),
+    text: String(option.text).trim(),
+  }))
+  const answerText = options
+    .filter((option) => answer.includes(option.key))
+    .map((option) => option.text)
     .join('；')
+  const stem = String(item.stem).trim()
 
   return {
     id: String(item.id),
     type: 'single',
-    stem: String(item.stem).trim(),
-    options: item.options.map((option) => ({
-      key: String(option.key),
-      text: String(option.text).trim(),
-    })),
+    stem,
+    options,
     answer,
     answerText,
     explanation: String(item.explanation ?? '').trim(),
     explanationSource: 'ai',
-    searchTerms: [],
+    searchTerms: buildSearchTerms({ stem, options, answerText }),
     revision: 1,
   }
 })
