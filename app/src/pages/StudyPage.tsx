@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router'
 import { QuestionView } from '@/components/QuestionView'
 import { QUESTIONS } from '@/config/bank'
 import { applyAnswerResult, applyCorrectAnswer, applyWrongAnswer } from '@/lib/domain/progress'
+import { nowMs } from '@/lib/clock'
 import { buildStudyQueue, moveStudyPosition } from '@/lib/study-session'
 import { useRepository } from '@/hooks/useRepository'
 import { useSettings } from '@/hooks/useSettings'
@@ -61,9 +62,9 @@ export default function StudyPage() {
     })
   }, [current, mode, repository])
 
-  const handleConfirm = async (correct: boolean, _selected: string[]) => {
+  const handleConfirm = async (correct: boolean) => {
     if (!current) return
-    const now = Date.now()
+    const now = nowMs()
     const nextProgress = applyAnswerResult(progress.get(current.id), current.id, correct, now)
     const nextProgressMap = new Map(progress)
     nextProgressMap.set(current.id, nextProgress)
@@ -149,6 +150,7 @@ export default function StudyPage() {
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
         <QuestionView
+          key={`${current.id}-${mode}`}
           question={current}
           mode={mode}
           index={position}
@@ -162,3 +164,5 @@ export default function StudyPage() {
     </section>
   )
 }
+
+

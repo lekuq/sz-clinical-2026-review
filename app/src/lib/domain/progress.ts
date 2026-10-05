@@ -30,6 +30,7 @@ export function applyCorrectAnswer(
   rule: UserSettings['wrongRemovalRule'],
   _now: number,
 ): WrongRecord | undefined {
+  void _now
   if (!record) return undefined
   if (rule === 'once') return undefined
 
@@ -38,4 +39,5 @@ export function applyCorrectAnswer(
 
   return { ...record, consecutiveCorrect }
 }
+
 

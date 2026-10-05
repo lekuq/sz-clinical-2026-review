@@ -30,13 +30,16 @@ export function useExam(options: UseExamOptions = {}) {
   const questions = options.questions ?? QUESTIONS
   const nowRef = useRef(options.now ?? Date.now)
   const randomRef = useRef(options.random ?? Math.random)
-  nowRef.current = options.now ?? nowRef.current
-  randomRef.current = options.random ?? randomRef.current
   const getNow = useCallback(() => nowRef.current(), [])
 
   const durationMinutes = options.durationMinutes ?? BANK_CONFIG.examDurationMinutes
   const questionCount = options.questionCount ?? BANK_CONFIG.examQuestionCount
   const passScore = options.passScore ?? BANK_CONFIG.passScore
+
+  useEffect(() => {
+    nowRef.current = options.now ?? Date.now
+    randomRef.current = options.random ?? Math.random
+  }, [options.now, options.random])
 
   const [session, setSession] = useState<ExamSession>()
   const [remaining, setRemaining] = useState(durationMinutes * 60)
@@ -118,7 +121,6 @@ export function useExam(options: UseExamOptions = {}) {
 
   useEffect(() => {
     if (!session || session.submittedAt) return
-    void checkTime()
     const timer = window.setInterval(() => void checkTime(), 1000)
     return () => window.clearInterval(timer)
   }, [checkTime, session])
@@ -133,3 +135,5 @@ export function useExam(options: UseExamOptions = {}) {
     checkTime,
   }
 }
+
+

@@ -12,10 +12,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     const normalized = query.trim()
-    if (!normalized) {
-      setResults([])
-      return
-    }
+    if (!normalized) return
     const timer = window.setTimeout(() => {
       setResults(searchQuestions(SEARCH_INDEX, normalized))
     }, 220)
@@ -34,7 +31,10 @@ export default function SearchPage() {
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value)
+            setResults([])
+          }}
           placeholder="输入题干关键词、选项或答案"
           className="h-13 w-full rounded-2xl border border-slate-200 bg-white py-3 pl-12 pr-4 text-base shadow-sm outline-none focus:border-teal-500"
         />
@@ -59,3 +59,4 @@ export default function SearchPage() {
     </section>
   )
 }
+

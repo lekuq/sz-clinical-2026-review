@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useState } from 'react'
 import { CheckCircle2, ChevronLeft, ChevronRight, Lightbulb, XCircle } from 'lucide-react'
 import type { Question } from '@/types/question'
 
@@ -7,7 +7,7 @@ interface QuestionViewProps {
   mode: 'back' | 'practice'
   index?: number
   total?: number
-  onConfirm?: (correct: boolean, selected: string[]) => void
+  onConfirm?: (correct: boolean) => void
   onPrevious?: () => void
   onNext?: () => void
   isLast?: boolean
@@ -26,18 +26,13 @@ export function QuestionView({
   const [selected, setSelected] = useState<string | null>(null)
   const [confirmed, setConfirmed] = useState(mode === 'back')
 
-  useEffect(() => {
-    setSelected(null)
-    setConfirmed(mode === 'back')
-  }, [mode, question.id])
-
   const correct = confirmed && selected !== null && question.answer.includes(selected)
 
   const handleConfirm = () => {
     if (!selected || confirmed) return
     const isCorrect = question.answer.includes(selected)
     setConfirmed(true)
-    onConfirm?.(isCorrect, [selected])
+    onConfirm?.(isCorrect)
   }
 
   const optionClass = (key: string) => {
@@ -96,9 +91,7 @@ export function QuestionView({
         <div className="space-y-4">
           <div
             className={`flex items-center gap-2 rounded-xl px-4 py-3 font-semibold ${
-              mode === 'back' || correct
-                ? 'bg-emerald-50 text-emerald-800'
-                : 'bg-rose-50 text-rose-800'
+              mode === 'back' || correct ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'
             }`}
           >
             {mode === 'back' ? (

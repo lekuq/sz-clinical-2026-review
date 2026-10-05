@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useState } from 'react'
 import { Clock3, Send } from 'lucide-react'
 import { ExamPalette } from '@/components/ExamPalette'
 import { BANK_CONFIG, QUESTION_MAP } from '@/config/bank'
@@ -16,11 +16,8 @@ export default function ExamPage() {
   const { session, remaining, loading, start, selectAnswer, submit } = useExam()
   const [currentIndex, setCurrentIndex] = useState(0)
   const questions: Question[] = session?.questionIds.map((questionId) => QUESTION_MAP.get(questionId)).filter((question): question is Question => Boolean(question)) ?? []
-  const currentQuestion = questions[currentIndex]
-
-  useEffect(() => {
-    if (currentIndex >= questions.length && questions.length > 0) setCurrentIndex(questions.length - 1)
-  }, [currentIndex, questions.length])
+  const safeIndex = Math.min(currentIndex, Math.max(0, questions.length - 1))
+  const currentQuestion = questions[safeIndex]
 
   if (loading) return <p className="text-sm text-slate-500">正在读取考试记录…</p>
 
@@ -78,7 +75,7 @@ export default function ExamPage() {
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-7">
-        <p className="text-sm text-slate-500">第 {currentIndex + 1} / {session.questionIds.length} 题</p>
+        <p className="text-sm text-slate-500">第 {safeIndex + 1} / {session.questionIds.length} 题</p>
         <h1 className="mt-3 text-base font-semibold leading-7 md:text-lg">{currentQuestion.stem}</h1>
 
         <div className="mt-5 space-y-3">
@@ -106,16 +103,16 @@ export default function ExamPage() {
           <button
             type="button"
             className="h-12 rounded-xl border border-slate-300 bg-white font-semibold disabled:opacity-40"
-            disabled={currentIndex === 0}
-            onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
+            disabled={safeIndex === 0}
+            onClick={() => setCurrentIndex(Math.max(0, safeIndex - 1))}
           >
             上一题
           </button>
           <button
             type="button"
             className="h-12 rounded-xl bg-teal-700 font-semibold text-white disabled:opacity-40"
-            disabled={currentIndex === session.questionIds.length - 1}
-            onClick={() => setCurrentIndex((index) => Math.min(session.questionIds.length - 1, index + 1))}
+            disabled={safeIndex === session.questionIds.length - 1}
+            onClick={() => setCurrentIndex(Math.min(session.questionIds.length - 1, safeIndex + 1))}
           >
             下一题
           </button>
@@ -137,5 +134,6 @@ export default function ExamPage() {
     </section>
   )
 }
+
 
 
