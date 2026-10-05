@@ -4,6 +4,7 @@ import Home from '@/pages/Home'
 import SettingsPage from '@/pages/SettingsPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
 import StudyPage from '@/pages/StudyPage'
+import ExamPage from '@/pages/ExamPage'
 
 function AppLayout() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Home />} />
         <Route path="study" element={<StudyPage />} />
-        <Route path="exam" element={<PlaceholderPage title="模拟考试" />} />
+        <Route path="exam" element={<ExamPage />} />
         <Route path="wrong" element={<PlaceholderPage title="错题集" />} />
         <Route path="search" element={<PlaceholderPage title="智能搜题" />} />
         <Route path="settings" element={<SettingsPage />} />
@@ -27,4 +28,5 @@ export default function App() {
     </Routes>
   )
 }
+
 

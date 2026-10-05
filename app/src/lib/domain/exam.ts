@@ -1,4 +1,12 @@
 ﻿import type { Question } from '@/types/question'
+import type { ExamSession } from '@/types/persistence'
+
+export interface ExamScore {
+  correctCount: number
+  wrongIds: string[]
+  score: number
+  passed: boolean
+}
 
 export function sampleExamQuestions(
   questions: Question[],
@@ -20,11 +28,42 @@ export function sampleExamQuestions(
   return pool.slice(0, count)
 }
 
+export function createExamSession(
+  questions: Question[],
+  now: number,
+  durationMinutes: number,
+  questionCount: number,
+  random: () => number = Math.random,
+): ExamSession {
+  const sampled = sampleExamQuestions(questions, questionCount, random)
+  return {
+    id: `exam-${now}-${sampled[0]?.id ?? 'empty'}`,
+    startedAt: now,
+    endsAt: now + durationMinutes * 60 * 1000,
+    questionIds: sampled.map((question) => question.id),
+    answers: {},
+  }
+}
+
+export function updateExamAnswer(
+  session: ExamSession,
+  questionId: string,
+  answer: string[],
+): ExamSession {
+  return {
+    ...session,
+    answers: {
+      ...session.answers,
+      [questionId]: [...answer],
+    },
+  }
+}
+
 export function scoreExam(
   questions: Question[],
   answers: Record<string, string[]>,
   passScore: number,
-) {
+): ExamScore {
   const wrongIds: string[] = []
   let correctCount = 0
 
@@ -43,6 +82,25 @@ export function scoreExam(
     score,
     passed: score >= passScore,
   }
+}
+
+export function submitExam(
+  session: ExamSession,
+  questions: Question[],
+  passScore: number,
+  now: number,
+): ExamSession {
+  const score = scoreExam(questions, session.answers, passScore)
+  return {
+    ...session,
+    submittedAt: now,
+    score: score.score,
+    passed: score.passed,
+  }
+}
+
+export function isExamExpired(session: ExamSession, now: number): boolean {
+  return now >= session.endsAt
 }
 
 export function remainingSeconds(endsAt: number, now: number): number {
