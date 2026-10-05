@@ -908,7 +908,7 @@ git commit -m "release: prepare 2026 clinical question bank"
 - Consumes: `app/dist`、卖家 Cloudflare 账户授权。
 - Produces: `https://sz-clinical-2026-review.pages.dev` 或首个可用的顺序后缀网址。
 
-- [ ] **Step 1: 登录卖家账户**
+- [x] **Step 1: 登录卖家账户**
 
 ```powershell
 npx wrangler login
@@ -916,7 +916,7 @@ npx wrangler login
 
 由卖家在浏览器中完成 Cloudflare 授权，不提交任何令牌。
 
-- [ ] **Step 2: 创建或选择 Pages 项目**
+- [x] **Step 2: 创建或选择 Pages 项目**
 
 ```powershell
 npx wrangler pages project create sz-clinical-2026-review --production-branch main
@@ -924,17 +924,17 @@ npx wrangler pages project create sz-clinical-2026-review --production-branch ma
 
 如果项目名已被占用，依次使用 `sz-clinical-2026-review-01`、`sz-clinical-2026-review-02`。
 
-- [ ] **Step 3: 部署生产版本**
+- [x] **Step 3: 部署生产版本**
 
 ```powershell
 npx wrangler pages deploy app/dist --project-name sz-clinical-2026-review --branch main
 ```
 
-- [ ] **Step 4: 验证线上版本**
+- [x] **Step 4: 验证线上版本**
 
 检查首页、500 题数量、搜题、模拟考试、刷新恢复和 Service Worker 更新；确认无网络请求发送作答数据。记录最终固定网址。
 
-- [ ] **Step 5: 提交部署记录**
+- [x] **Step 5: 提交部署记录**
 
 ```powershell
 git add docs/deployment.md
