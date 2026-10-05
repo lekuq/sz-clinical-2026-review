@@ -11,28 +11,46 @@ import type { QuestionProgress, WrongRecord } from '@/types/persistence'
 export default function StudyPage() {
   const [params, setParams] = useSearchParams()
   const mode = params.get('mode') === 'back' ? 'back' : 'practice'
+  const source = params.get('source')
+  const requestedQuestion = params.get('question')
   const [order, setOrder] = useState<'sequential' | 'random'>('sequential')
   const [position, setPosition] = useState(0)
   const [progress, setProgress] = useState<Map<string, QuestionProgress>>(new Map())
   const [wrongBook, setWrongBook] = useState<Map<string, WrongRecord>>(new Map())
+  const [restored, setRestored] = useState(false)
   const repository = useRepository()
   const { settings } = useSettings()
 
-  const queue = useMemo(() => buildStudyQueue(QUESTIONS, order), [order])
+  const queue = useMemo(() => {
+    const questions = source === 'wrong'
+      ? QUESTIONS.filter((question) => wrongBook.has(question.id))
+      : QUESTIONS
+    return buildStudyQueue(questions, order)
+  }, [order, source, wrongBook])
+
   const current = queue[position]
 
   useEffect(() => {
+    let cancelled = false
     Promise.all([repository.getProgress(), repository.getWrongRecords(), repository.getStudyPosition()]).then(
       ([storedProgress, storedWrongBook, storedPosition]) => {
+        if (cancelled) return
         setProgress(storedProgress)
         setWrongBook(storedWrongBook)
-        if (storedPosition?.mode === mode) {
+        if (requestedQuestion) {
+          const requestedIndex = QUESTIONS.findIndex((question) => question.id === requestedQuestion)
+          if (requestedIndex >= 0) setPosition(requestedIndex)
+        } else if (source !== 'wrong' && storedPosition?.mode === mode) {
           const storedIndex = queue.findIndex((question) => question.id === storedPosition.questionId)
           if (storedIndex >= 0) setPosition(storedIndex)
         }
+        setRestored(true)
       },
     )
-  }, [mode, queue, repository])
+    return () => {
+      cancelled = true
+    }
+  }, [mode, queue, repository, requestedQuestion, source])
 
   useEffect(() => {
     if (!current) return
@@ -85,7 +103,14 @@ export default function StudyPage() {
     setPosition((currentPosition) => moveStudyPosition(currentPosition, queue.length, 1))
   }
 
-  if (!current) return <p className="text-sm text-slate-500">题库为空。</p>
+  if (!restored) return <p className="text-sm text-slate-500">正在读取学习记录…</p>
+  if (!current) {
+    return (
+      <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+        {source === 'wrong' ? '错题集为空，暂时没有可复习的题目。' : '题库为空。'}
+      </p>
+    )
+  }
 
   return (
     <section className="mx-auto max-w-3xl space-y-5">
@@ -94,14 +119,14 @@ export default function StudyPage() {
           <button
             type="button"
             className={`rounded-lg px-4 py-2 text-sm font-semibold ${mode === 'back' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
-            onClick={() => setParams({ mode: 'back' })}
+            onClick={() => setParams({ mode: 'back', ...(source ? { source } : {}) })}
           >
             背题模式
           </button>
           <button
             type="button"
             className={`rounded-lg px-4 py-2 text-sm font-semibold ${mode === 'practice' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
-            onClick={() => setParams({ mode: 'practice' })}
+            onClick={() => setParams({ mode: 'practice', ...(source ? { source } : {}) })}
           >
             做题模式
           </button>

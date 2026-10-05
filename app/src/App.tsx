@@ -2,9 +2,10 @@
 import { AppShell } from '@/app/AppShell'
 import Home from '@/pages/Home'
 import SettingsPage from '@/pages/SettingsPage'
-import PlaceholderPage from '@/pages/PlaceholderPage'
 import StudyPage from '@/pages/StudyPage'
 import ExamPage from '@/pages/ExamPage'
+import WrongBookPage from '@/pages/WrongBookPage'
+import SearchPage from '@/pages/SearchPage'
 
 function AppLayout() {
   return (
@@ -21,12 +22,14 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="study" element={<StudyPage />} />
         <Route path="exam" element={<ExamPage />} />
-        <Route path="wrong" element={<PlaceholderPage title="错题集" />} />
-        <Route path="search" element={<PlaceholderPage title="智能搜题" />} />
+        <Route path="wrong" element={<WrongBookPage />} />
+        <Route path="search" element={<SearchPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>
   )
 }
+
+
 
 
