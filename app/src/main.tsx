@@ -1,6 +1,6 @@
 ﻿import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
+import { HashRouter } from 'react-router'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App.tsx'
 import './index.css'
@@ -19,8 +19,9 @@ const updateSW = registerSW({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
+
